@@ -51,8 +51,12 @@ services:
             kafka.clusters.0.serde.4.name: AnotherSchemaRegistry
             kafka.clusters.0.serde.4.className: io.kafbat.ui.serdes.builtin.sr.SchemaRegistrySerde
             kafka.clusters.0.serde.4.properties.url: http://schemaregistry0:8085
-            kafka.clusters.0.serde.4.properties.keySchemaNameTemplate: "%s-key"
             kafka.clusters.0.serde.4.properties.schemaNameTemplate: "%s-value"
+            kafka.clusters.0.serde.4.properties.keySchemaNameTemplate: "%s-key"
+            kafka.clusters.0.serde.4.properties.schemaNameTemplateRegex: "^(.*)$"
+            kafka.clusters.0.serde.4.properties.schemaNameTemplateRegexReplace: "$1-value"
+            kafka.clusters.0.serde.4.properties.keySchemaNameTemplateRegex: "^(.*)$"
+            kafka.clusters.0.serde.4.properties.keySchemaNameTemplateRegexReplace: "$1-key"
             #kafka.clusters.0.serde.4.topicValuesPattern: "sr2-topic.*"
             # optional auth and ssl properties for SR (overrides cluster-level):
             #kafka.clusters.0.serde.4.properties.username: "user"

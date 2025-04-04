@@ -35,7 +35,8 @@ class SchemaRegistrySerdeTest {
   @BeforeEach
   void init() {
     serde = new SchemaRegistrySerde();
-    serde.configure(List.of("wontbeused"), registryClient, "%s-key", "%s-value", true);
+    serde.configure(List.of("wontbeused"), registryClient, "%s-key", "%s-value",
+        "^(.*)$", "$1-value", "^(.*)$", "$1-key", true);
   }
 
   @ParameterizedTest
@@ -135,7 +136,8 @@ class SchemaRegistrySerdeTest {
 
     @BeforeEach
     void init() {
-      serde.configure(List.of("wontbeused"), registryClient, "%s-key", "%s-value", false);
+      serde.configure(List.of("wontbeused"), registryClient, "%s-key", "%s-value",
+          "^(.*)$", "$1-value", "^(.*)$", "$1-key", false);
     }
 
     @Test
@@ -151,7 +153,8 @@ class SchemaRegistrySerdeTest {
 
     @BeforeEach
     void init() {
-      serde.configure(List.of("wontbeused"), registryClient, "%s-key", "%s-value", true);
+      serde.configure(List.of("wontbeused"), registryClient, "%s-key", "%s-value",
+          "^(.*)$", "$1-value", "^(.*)$", "$1-key", true);
     }
 
     @Test

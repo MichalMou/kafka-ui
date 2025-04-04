@@ -54,6 +54,10 @@ public class SchemaRegistrySerde implements BuiltInSerde {
   private String valueSchemaNameTemplate;
   private String keySchemaNameTemplate;
   private boolean checkSchemaExistenceForDeserialize;
+  private String schemaNameTemplateRegex;
+  private String schemaNameTemplateRegexReplace;
+  private String keySchemaNameTemplateRegex;
+  private String keySchemaNameTemplateRegexReplace;
 
   private Map<SchemaType, MessageFormatter> schemaRegistryFormatters;
 
@@ -84,6 +88,10 @@ public class SchemaRegistrySerde implements BuiltInSerde {
         ),
         kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplate", String.class).orElse("%s-key"),
         kafkaClusterProperties.getProperty("schemaRegistrySchemaNameTemplate", String.class).orElse("%s-value"),
+        kafkaClusterProperties.getProperty("schemaRegistrySchemaNameTemplateRegex", String.class).orElse("(.*)"),
+        kafkaClusterProperties.getProperty("schemaRegistrySchemaNameTemplateRegexReplace", String.class).orElse("$1-value"),
+        kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplateRegex", String.class).orElse("(.*)"),
+        kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplateRegexReplace", String.class).orElse("$1-key"),
         kafkaClusterProperties.getProperty("schemaRegistryCheckSchemaExistenceForDeserialize", Boolean.class)
             .orElse(false)
     );
@@ -110,6 +118,10 @@ public class SchemaRegistrySerde implements BuiltInSerde {
         ),
         serdeProperties.getProperty("keySchemaNameTemplate", String.class).orElse("%s-key"),
         serdeProperties.getProperty("schemaNameTemplate", String.class).orElse("%s-value"),
+        serdeProperties.getProperty("keySchemaNameTemplateRegex", String.class).orElse("(.*)"),
+        serdeProperties.getProperty("keySchemaNameTemplateRegexReplace", String.class).orElse("$1-key"),
+        serdeProperties.getProperty("schemaNameTemplateRegex", String.class).orElse("(.*)"),
+        serdeProperties.getProperty("schemaNameTemplateRegexReplace", String.class).orElse("$1-value"),
         serdeProperties.getProperty("checkSchemaExistenceForDeserialize", Boolean.class)
             .orElse(false)
     );
@@ -121,11 +133,19 @@ public class SchemaRegistrySerde implements BuiltInSerde {
       SchemaRegistryClient schemaRegistryClient,
       String keySchemaNameTemplate,
       String valueSchemaNameTemplate,
+      String schemaNameTemplateRegex,
+      String schemaNameTemplateRegexReplace,
+      String keySchemaNameTemplateRegex,
+      String keySchemaNameTemplateRegexReplace,
       boolean checkTopicSchemaExistenceForDeserialize) {
     this.schemaRegistryUrls = schemaRegistryUrls;
     this.schemaRegistryClient = schemaRegistryClient;
     this.keySchemaNameTemplate = keySchemaNameTemplate;
     this.valueSchemaNameTemplate = valueSchemaNameTemplate;
+    this.schemaNameTemplateRegex = schemaNameTemplateRegex;
+    this.schemaNameTemplateRegexReplace = schemaNameTemplateRegexReplace;
+    this.keySchemaNameTemplateRegex = keySchemaNameTemplateRegex;
+    this.keySchemaNameTemplateRegexReplace = keySchemaNameTemplateRegexReplace;
     this.schemaRegistryFormatters = MessageFormatter.createMap(schemaRegistryClient);
     this.checkSchemaExistenceForDeserialize = checkTopicSchemaExistenceForDeserialize;
   }
@@ -252,7 +272,15 @@ public class SchemaRegistrySerde implements BuiltInSerde {
   }
 
   private String schemaSubject(String topic, Target type) {
-    return String.format(type == Target.KEY ? keySchemaNameTemplate : valueSchemaNameTemplate, topic);
+    if (type == Target.VALUE) {
+      return (schemaNameTemplateRegex.isEmpty() || schemaNameTemplateRegexReplace.isEmpty())
+              ? String.format(valueSchemaNameTemplate, topic) : 
+              topic.replaceAll(schemaNameTemplateRegex, schemaNameTemplateRegexReplace);
+    } else {
+      return (keySchemaNameTemplateRegex.isEmpty() || keySchemaNameTemplateRegexReplace.isEmpty()) 
+              ? String.format(keySchemaNameTemplate, topic) : 
+              topic.replaceAll(keySchemaNameTemplateRegex, keySchemaNameTemplateRegexReplace);
+    }
   }
 
   @Override
