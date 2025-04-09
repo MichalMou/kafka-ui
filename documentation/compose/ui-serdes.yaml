@@ -14,7 +14,6 @@ services:
             kafka.clusters.0.name: SerdeExampleCluster
             kafka.clusters.0.bootstrapServers: kafka0:29092
             kafka.clusters.0.schemaRegistry: http://schemaregistry0:8085
-
             # optional SSL settings for cluster (will be used by SchemaRegistry serde, if set)
             #kafka.clusters.0.ssl.keystoreLocation: /kafka.keystore.jks
             #kafka.clusters.0.ssl.keystorePassword: "secret"
@@ -53,10 +52,6 @@ services:
             kafka.clusters.0.serde.4.properties.url: http://schemaregistry0:8085
             kafka.clusters.0.serde.4.properties.schemaNameTemplate: "%s-value"
             kafka.clusters.0.serde.4.properties.keySchemaNameTemplate: "%s-key"
-            kafka.clusters.0.serde.4.properties.schemaNameTemplateRegex: "^(.*)$"
-            kafka.clusters.0.serde.4.properties.schemaNameTemplateRegexReplace: "$1-value"
-            kafka.clusters.0.serde.4.properties.keySchemaNameTemplateRegex: "^(.*)$"
-            kafka.clusters.0.serde.4.properties.keySchemaNameTemplateRegexReplace: "$1-key"
             #kafka.clusters.0.serde.4.topicValuesPattern: "sr2-topic.*"
             # optional auth and ssl properties for SR (overrides cluster-level):
             #kafka.clusters.0.serde.4.properties.username: "user"

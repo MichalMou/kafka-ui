@@ -86,12 +86,14 @@ public class SchemaRegistrySerde implements BuiltInSerde {
             kafkaClusterProperties.getProperty("ssl.truststoreLocation", String.class).orElse(null),
             kafkaClusterProperties.getProperty("ssl.truststorePassword", String.class).orElse(null)
         ),
-        kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplate", String.class).orElse("%s-key"),
         kafkaClusterProperties.getProperty("schemaRegistrySchemaNameTemplate", String.class).orElse("%s-value"),
-        kafkaClusterProperties.getProperty("schemaRegistrySchemaNameTemplateRegex", String.class).orElse("(.*)"),
-        kafkaClusterProperties.getProperty("schemaRegistrySchemaNameTemplateRegexReplace", String.class).orElse("$1-value"),
-        kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplateRegex", String.class).orElse("(.*)"),
-        kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplateRegexReplace", String.class).orElse("$1-key"),
+        kafkaClusterProperties.getProperty("schemaRegistryKeySchemaNameTemplate", String.class).orElse("%s-key"),
+        kafkaClusterProperties.getProperty("schemaNameTemplateRegex", String.class).orElse(
+            "^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.)?(.*)$"),
+        kafkaClusterProperties.getProperty("schemaNameTemplateRegexReplace", String.class).orElse("$1-value"),
+        kafkaClusterProperties.getProperty("keySchemaNameTemplateRegex", String.class).orElse(
+            "^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.)?(.*)$"),
+        kafkaClusterProperties.getProperty("keySchemaNameTemplateRegexReplace", String.class).orElse("$1-key"),
         kafkaClusterProperties.getProperty("schemaRegistryCheckSchemaExistenceForDeserialize", Boolean.class)
             .orElse(false)
     );
@@ -116,12 +118,12 @@ public class SchemaRegistrySerde implements BuiltInSerde {
             kafkaClusterProperties.getProperty("ssl.truststoreLocation", String.class).orElse(null),
             kafkaClusterProperties.getProperty("ssl.truststorePassword", String.class).orElse(null)
         ),
-        serdeProperties.getProperty("keySchemaNameTemplate", String.class).orElse("%s-key"),
         serdeProperties.getProperty("schemaNameTemplate", String.class).orElse("%s-value"),
-        serdeProperties.getProperty("keySchemaNameTemplateRegex", String.class).orElse("(.*)"),
-        serdeProperties.getProperty("keySchemaNameTemplateRegexReplace", String.class).orElse("$1-key"),
-        serdeProperties.getProperty("schemaNameTemplateRegex", String.class).orElse("(.*)"),
+        serdeProperties.getProperty("keySchemaNameTemplate", String.class).orElse("%s-key"),
+        serdeProperties.getProperty("schemaNameTemplateRegex", String.class).orElse("^(.*)$"),
         serdeProperties.getProperty("schemaNameTemplateRegexReplace", String.class).orElse("$1-value"),
+        serdeProperties.getProperty("keySchemaNameTemplateRegex", String.class).orElse("^(.*)$"),
+        serdeProperties.getProperty("keySchemaNameTemplateRegexReplace", String.class).orElse("$1-key"),
         serdeProperties.getProperty("checkSchemaExistenceForDeserialize", Boolean.class)
             .orElse(false)
     );
@@ -131,8 +133,8 @@ public class SchemaRegistrySerde implements BuiltInSerde {
   void configure(
       List<String> schemaRegistryUrls,
       SchemaRegistryClient schemaRegistryClient,
-      String keySchemaNameTemplate,
       String valueSchemaNameTemplate,
+      String keySchemaNameTemplate,
       String schemaNameTemplateRegex,
       String schemaNameTemplateRegexReplace,
       String keySchemaNameTemplateRegex,
@@ -140,8 +142,8 @@ public class SchemaRegistrySerde implements BuiltInSerde {
       boolean checkTopicSchemaExistenceForDeserialize) {
     this.schemaRegistryUrls = schemaRegistryUrls;
     this.schemaRegistryClient = schemaRegistryClient;
-    this.keySchemaNameTemplate = keySchemaNameTemplate;
     this.valueSchemaNameTemplate = valueSchemaNameTemplate;
+    this.keySchemaNameTemplate = keySchemaNameTemplate;
     this.schemaNameTemplateRegex = schemaNameTemplateRegex;
     this.schemaNameTemplateRegexReplace = schemaNameTemplateRegexReplace;
     this.keySchemaNameTemplateRegex = keySchemaNameTemplateRegex;
